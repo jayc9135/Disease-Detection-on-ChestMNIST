@@ -5,6 +5,8 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, random_split
 from torchvision import datasets, transforms
 import random
+from model.central_model import CentralCNN
+from data.get_data import DataLoaders
 
 # Define the federated learning client
 class FederatedClient(fl.client.NumPyClient):
@@ -62,15 +64,14 @@ class FederatedClient(fl.client.NumPyClient):
 # Function to start the client, with an option for poisoned data
 def start_client(poisoned=False):
     # Load data
-    train_dataset, val_dataset, test_dataset = load_data(poisoned=poisoned, flip_ratio=0.75)
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    train_loader = DataLoaders.get_train_loader(poised=poisoned)
+    test_loader = DataLoaders.get_test_loader()
 
     # Device configuration (use GPU if available)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Initialize the model and move it to the device
-    model = CNN().to(device)
+    model = CentralCNN().to(device)
 
     # Generate a client ID
     import sys
