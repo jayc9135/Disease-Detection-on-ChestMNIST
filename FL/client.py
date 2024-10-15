@@ -64,8 +64,12 @@ class FederatedClient(fl.client.NumPyClient):
 # Function to start the client, with an option for poisoned data
 def start_client(poisoned=False):
     # Load data
-    train_loader = DataLoaders.get_train_loader(poised=poisoned)
-    test_loader = DataLoaders.get_test_loader()
+    train_loader = DataLoaders.get_train_loader(training_subset_size=100,
+                                                batch_size=10,
+                                                poised=False,
+                                                flip_ratio=0.75)
+    test_loader = DataLoaders.get_test_loader(testing_subset_size=100,
+                                              batch_size=10)
 
     # Device configuration (use GPU if available)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
