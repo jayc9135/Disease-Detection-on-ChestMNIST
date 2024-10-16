@@ -1,0 +1,8 @@
+venv
+.idea
+.env
+
+# Ignore Python cache directories and files
+__pycache__/
+*.pyc
+*.pyo

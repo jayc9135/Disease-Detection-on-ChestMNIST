@@ -33,13 +33,20 @@ class FederatedClient(fl.client.NumPyClient):
         for epoch in range(1):  # One local epoch for each round
             for batch in self.train_loader:
                 images, labels = batch
-                images, labels = images.to(self.device), labels.to(self.device)
+                images = images.to(self.device)
+                labels = labels.to(self.device, dtype=torch.long)  # Ensure labels are Long type
+
+                # Convert one-hot encoded labels to class indices
+                if labels.dim() > 1:
+                    labels = torch.argmax(labels, dim=1)
+
                 self.optimizer.zero_grad()
-                output = self.model(images)
+                output = self.model(images)  # Output should be raw logits
                 loss = self.criterion(output, labels)
                 loss.backward()
                 self.optimizer.step()
         return self.get_parameters(), len(self.train_loader.dataset), {}
+
 
     def evaluate(self, parameters, config):
         self.set_parameters(parameters)
@@ -48,8 +55,14 @@ class FederatedClient(fl.client.NumPyClient):
         total_loss = 0.0
         with torch.no_grad():
             for images, labels in self.test_loader:
-                images, labels = images.to(self.device), labels.to(self.device)
-                output = self.model(images)
+                images = images.to(self.device)
+                labels = labels.to(self.device, dtype=torch.long)  # Ensure labels are Long type
+
+                # Convert one-hot encoded labels to class indices
+                if labels.dim() > 1:
+                    labels = torch.argmax(labels, dim=1)
+
+                output = self.model(images)  # Output should be raw logits
                 loss = self.criterion(output, labels)
                 total_loss += loss.item() * labels.size(0)
                 _, predicted = torch.max(output.data, 1)
@@ -58,17 +71,23 @@ class FederatedClient(fl.client.NumPyClient):
 
         accuracy = correct / total
         average_loss = total_loss / total  # Average loss per sample
-        # Include client ID in the metrics
         return average_loss, total, {"accuracy": accuracy, "loss": average_loss, "cid": self.cid}
+
+
+
+
 
 # Function to start the client, with an option for poisoned data
 def start_client(poisoned=False):
+    # Create an instance of DataLoaders
+    data_loader_instance = DataLoaders()
+
     # Load data
-    train_loader = DataLoaders.get_train_loader(training_subset_size=100,
+    train_loader = data_loader_instance.get_train_loader(training_subset_size=1000,
                                                 batch_size=10,
                                                 poised=False,
                                                 flip_ratio=0.75)
-    test_loader = DataLoaders.get_test_loader(testing_subset_size=100,
+    test_loader = data_loader_instance.get_test_loader(testing_subset_size=100,
                                               batch_size=10)
 
     # Device configuration (use GPU if available)

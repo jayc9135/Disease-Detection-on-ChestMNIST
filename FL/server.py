@@ -1,12 +1,16 @@
 import flwr as fl
 import numpy as np
 import csv
-import os
+import argparse
 
 # Custom strategy inheriting from FedAvg
 class CustomFedAvg(fl.server.strategy.FedAvg):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, fraction_fit, min_fit_clients, min_available_clients):
+        super().__init__(
+            fraction_fit=fraction_fit,
+            min_fit_clients=min_fit_clients,
+            min_available_clients=min_available_clients,
+        )
         # Initialize storage for metrics
         self.all_client_losses = {}
         self.all_client_accuracies = {}
@@ -14,7 +18,6 @@ class CustomFedAvg(fl.server.strategy.FedAvg):
         self.avg_accuracies = []
 
     def aggregate_evaluate(self, server_round, results, failures):
-        # Extract loss and accuracy from the results
         losses = []
         accuracies = []
         client_ids = []
@@ -26,21 +29,18 @@ class CustomFedAvg(fl.server.strategy.FedAvg):
             accuracies.append(accuracy)
             client_ids.append(cid)
 
-            # Store per-client metrics
             if cid not in self.all_client_losses:
                 self.all_client_losses[cid] = []
                 self.all_client_accuracies[cid] = []
             self.all_client_losses[cid].append(loss)
             self.all_client_accuracies[cid].append(accuracy)
 
-        # Calculate average accuracy and loss
         avg_loss = float(np.mean(losses))
         avg_accuracy = float(np.mean(accuracies))
 
         self.avg_losses.append(avg_loss)
         self.avg_accuracies.append(avg_accuracy)
 
-        # Save metrics to a CSV file
         filename = f'metrics_round_{server_round}.csv'
         with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file)
@@ -49,16 +49,24 @@ class CustomFedAvg(fl.server.strategy.FedAvg):
                 writer.writerow([cid, loss, accuracy])
             writer.writerow(['Average', avg_loss, avg_accuracy])
 
-        # Return aggregated loss and metrics
         return avg_loss, {"accuracy": avg_accuracy}
 
-# Start the server
 if __name__ == "__main__":
-    # Use the custom strategy
-    strategy = CustomFedAvg()
+    parser = argparse.ArgumentParser(description="Flower Server Configuration")
+    parser.add_argument("--fraction_fit", type=float, default=1.0, help="Fraction of clients used in each round")
+    parser.add_argument("--min_fit_clients", type=int, default=8, help="Minimum number of clients for training")
+    parser.add_argument("--min_available_clients", type=int, default=10, help="Minimum number of available clients to start a round")
+
+    args = parser.parse_args()
+
+    strategy = CustomFedAvg(
+        fraction_fit=args.fraction_fit,
+        min_fit_clients=args.min_fit_clients,
+        min_available_clients=args.min_available_clients,
+    )
 
     fl.server.start_server(
         server_address="localhost:8080",
         strategy=strategy,
-        config=fl.server.ServerConfig(num_rounds=3),  # Adjust the number of rounds if necessary
+        config=fl.server.ServerConfig(num_rounds=5),
     )
