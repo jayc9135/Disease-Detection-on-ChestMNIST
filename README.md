@@ -7,7 +7,7 @@ First, create and activate a virtual environment to manage dependencies cleanly:
 * **Create the virtual environment** :
 
   ```
-
+  python -m venv venv
   ```
 * **Activate the virtual environment** :
 
