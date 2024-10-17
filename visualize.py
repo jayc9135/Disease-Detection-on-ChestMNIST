@@ -85,7 +85,7 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
     plt.show()
 
 if __name__ == "__main__":
-    num_rounds = 10 
+    num_rounds = 7 
     # Visualize without attack
     attack=False
     client_losses, client_accuracies, avg_losses, avg_accuracies = load_metrics(num_rounds, attack)

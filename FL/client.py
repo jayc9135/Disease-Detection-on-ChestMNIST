@@ -30,7 +30,7 @@ class FederatedClient(fl.client.NumPyClient):
     def fit(self, parameters, config):
         self.set_parameters(parameters)
         self.model.train()
-        for epoch in range(1):  # One local epoch for each round
+        for epoch in range(1):  
             for batch in self.train_loader:
                 images, labels = batch
                 images = images.to(self.device)
