@@ -45,9 +45,9 @@ class CustomFedAvg(fl.server.strategy.FedAvg):
 
         # Determine the directory based on the attack parameter
         if self.attack == 'y':
-            directory = 'results/data/attack'
+            directory = 'results/metrics/attack'
         elif self.attack == 'n':
-            directory = 'results/data/no_attack'
+            directory = 'results/metrics/no_attack'
 
         # Ensure the directory exists
         os.makedirs(directory, exist_ok=True)
