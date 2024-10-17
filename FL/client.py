@@ -83,9 +83,9 @@ def start_client(poisoned=False):
     data_loader_instance = DataLoaders()
 
     # Load data
-    train_loader = data_loader_instance.get_train_loader(training_subset_size=1000,
+    train_loader = data_loader_instance.get_train_loader(training_subset_size=10000,
                                                 batch_size=10,
-                                                poised=False,
+                                                poisoned=poisoned,
                                                 flip_ratio=0.75)
     test_loader = data_loader_instance.get_test_loader(testing_subset_size=100,
                                               batch_size=10)

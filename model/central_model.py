@@ -80,6 +80,7 @@ class CentralCNN(nn.Module):
         # Output Layer
         x = self.fc3(x)
         # x = torch.sigmoid(x)
+        x = torch.softmax(x, dim=1)
 
         return x
 

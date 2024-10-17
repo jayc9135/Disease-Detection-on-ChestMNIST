@@ -2,14 +2,17 @@ import matplotlib.pyplot as plt
 import csv
 import os
 
-def load_metrics(num_rounds):
+def load_metrics(num_rounds, attack):
     client_losses = {}
     client_accuracies = {}
     avg_losses = []
     avg_accuracies = []
 
     for r in range(1, num_rounds + 1):
-        filename = f'metrics_round_{r}.csv'
+        if attack:
+            filename = f'visualization_data/attack_output/metrics_round_{r}.csv'
+        else:
+            filename = f'visualization_data/normal_output/metrics_round_{r}.csv'
         if not os.path.exists(filename):
             print(f"File {filename} does not exist.")
             continue
@@ -82,9 +85,8 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
     plt.show()
 
 if __name__ == "__main__":
-    num_rounds = 3  # Adjust based on your setup
+    num_rounds = 10 
     # Visualize without attack
-    client_losses, client_accuracies, avg_losses, avg_accuracies = load_metrics(num_rounds)
-    plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_accuracies, attack=False)
-
-    # If you have metrics from the attack scenario stored in different files, load and plot them similarly.
+    attack=False
+    client_losses, client_accuracies, avg_losses, avg_accuracies = load_metrics(num_rounds, attack)
+    plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_accuracies, attack)
