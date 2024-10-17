@@ -10,9 +10,9 @@ def load_metrics(num_rounds, attack):
 
     for r in range(1, num_rounds + 1):
         if attack:
-            filename = f'visualization_data/attack_output/metrics_round_{r}.csv'
+            filename = f'results/data/attack/metrics_round_{r}.csv'
         else:
-            filename = f'visualization_data/normal_output/metrics_round_{r}.csv'
+            filename = f'results/data/no_attack/metrics_round_{r}.csv'
         if not os.path.exists(filename):
             print(f"File {filename} does not exist.")
             continue
@@ -40,6 +40,12 @@ def load_metrics(num_rounds, attack):
 def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_accuracies, attack=False):
     rounds = list(range(1, num_rounds + 1))
 
+    if attack:
+        directory ='results/plots/attack'
+    else:
+        directory ='results/plots/no_attack'
+    os.makedirs(directory, exist_ok=True)
+
     # 1. History of loss per client over rounds
     plt.figure(figsize=(10, 6))
     for cid, losses in client_losses.items():
@@ -49,7 +55,7 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
     plt.ylabel("Loss")
     plt.legend()
     plt.grid(True)
-    plt.savefig(f"loss_per_client{'_attack' if attack else ''}.png")
+    plt.savefig(f"{directory}/loss_per_client{'_attack' if attack else ''}.png")
     plt.show()
 
     # 2. History of average loss among clients over rounds
@@ -59,7 +65,7 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
     plt.xlabel("Round")
     plt.ylabel("Average Loss")
     plt.grid(True)
-    plt.savefig(f"average_loss{'_attack' if attack else ''}.png")
+    plt.savefig(f"{directory}/average_loss{'_attack' if attack else ''}.png")
     plt.show()
 
     # 3. History of evaluation accuracy per client over rounds
@@ -71,7 +77,7 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
     plt.ylabel("Accuracy")
     plt.legend()
     plt.grid(True)
-    plt.savefig(f"accuracy_per_client{'_attack' if attack else ''}.png")
+    plt.savefig(f"{directory}/accuracy_per_client{'_attack' if attack else ''}.png")
     plt.show()
 
     # 4. History of average evaluation accuracy among clients over rounds
@@ -81,12 +87,18 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
     plt.xlabel("Round")
     plt.ylabel("Average Accuracy")
     plt.grid(True)
-    plt.savefig(f"average_accuracy{'_attack' if attack else ''}.png")
+    plt.savefig(f"{directory}/average_accuracy{'_attack' if attack else ''}.png")
     plt.show()
 
 if __name__ == "__main__":
-    num_rounds = 7 
+    num_rounds = 10
     # Visualize without attack
     attack=False
+    client_losses, client_accuracies, avg_losses, avg_accuracies = load_metrics(num_rounds, attack)
+    plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_accuracies, attack)
+
+
+    # Visualize with attack
+    attack=True
     client_losses, client_accuracies, avg_losses, avg_accuracies = load_metrics(num_rounds, attack)
     plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_accuracies, attack)

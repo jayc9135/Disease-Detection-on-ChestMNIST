@@ -45,9 +45,9 @@ class CustomFedAvg(fl.server.strategy.FedAvg):
 
         # Determine the directory based on the attack parameter
         if self.attack == 'y':
-            directory = 'visualization_data/attack_output'
+            directory = 'results/data/attack'
         elif self.attack == 'n':
-            directory = 'visualization_data/normal_output'
+            directory = 'results/data/no_attack'
 
         # Ensure the directory exists
         os.makedirs(directory, exist_ok=True)
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Flower Server Configuration")
     parser.add_argument("--attack", type=str, default="n", help="Is there an attack? Yes[y] or No[n]")
     parser.add_argument("--fraction_fit", type=float, default=1.0, help="Fraction of clients used in each round")
-    parser.add_argument("--min_fit_clients", type=int, default=8, help="Minimum number of clients for training")
+    parser.add_argument("--min_fit_clients", type=int, default=10, help="Minimum number of clients for training")
     parser.add_argument("--min_available_clients", type=int, default=10, help="Minimum number of available clients to start a round")
 
     args = parser.parse_args()
