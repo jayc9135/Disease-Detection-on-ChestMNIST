@@ -45,26 +45,36 @@ class CustomFedAvg(fl.server.strategy.FedAvg):
 
         # Determine the directory based on the attack parameter
         if self.attack == 'y':
-            directory = 'results/metrics/attack'
+            directory = '../results/metrics/attack'
         elif self.attack == 'n':
-            directory = 'results/metrics/no_attack'
+            directory = '../results/metrics/no_attack'
 
         # Ensure the directory exists
-        os.makedirs(directory, exist_ok=True)
+        try:
+            os.makedirs(directory, exist_ok=True)
+        except OSError as e:
+            print(f"Failed to create directory {directory}. Error: {e}")
 
+            return avg_loss, {"accuracy": avg_accuracy}
+
+        # Write the metrics to CSV
         filename = f'{directory}/metrics_round_{server_round}.csv'
-        with open(filename, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Client', 'Loss', 'Accuracy'])
-            for cid, loss, accuracy in zip(client_ids, losses, accuracies):
-                writer.writerow([cid, loss, accuracy])
-            writer.writerow(['Average', avg_loss, avg_accuracy])
+        try:
+            with open(filename, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Client', 'Loss', 'Accuracy'])
+                for cid, loss, accuracy in zip(client_ids, losses, accuracies):
+                    writer.writerow([cid, loss, accuracy])
+                writer.writerow(['Average', avg_loss, avg_accuracy])
+            print(f"Metrics for round {server_round} written to {filename}")
+        except IOError as e:
+            print(f"Failed to write metrics to {filename}. Error: {e}")
 
         return avg_loss, {"accuracy": avg_accuracy}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Flower Server Configuration")
-    parser.add_argument("--attack", type=str, default="n", help="Is there an attack? Yes[y] or No[n]")
+    parser.add_argument("--attack", type=str, default="y", help="Is there an attack? Yes[y] or No[n]")
     parser.add_argument("--fraction_fit", type=float, default=1.0, help="Fraction of clients used in each round")
     parser.add_argument("--min_fit_clients", type=int, default=10, help="Minimum number of clients for training")
     parser.add_argument("--min_available_clients", type=int, default=10, help="Minimum number of available clients to start a round")

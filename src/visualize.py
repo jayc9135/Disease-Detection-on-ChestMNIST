@@ -10,9 +10,9 @@ def load_metrics(num_rounds, attack):
 
     for r in range(1, num_rounds + 1):
         if attack:
-            filename = f'results/data/attack/metrics_round_{r}.csv'
+            filename = f'results/metrics/attack/metrics_round_{r}.csv'
         else:
-            filename = f'results/data/no_attack/metrics_round_{r}.csv'
+            filename = f'results/metrics/no_attack/metrics_round_{r}.csv'
         if not os.path.exists(filename):
             print(f"File {filename} does not exist.")
             continue
