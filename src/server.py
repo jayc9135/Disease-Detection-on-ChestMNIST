@@ -45,9 +45,9 @@ class CustomFedAvg(fl.server.strategy.FedAvg):
 
         # Determine the directory based on the attack parameter
         if self.attack == 'y':
-            directory = '../results/metrics/attack'
+            directory = 'results/metrics/attack'
         elif self.attack == 'n':
-            directory = '../results/metrics/no_attack'
+            directory = 'results/metrics/no_attack'
 
         # Ensure the directory exists
         try:
@@ -91,5 +91,5 @@ if __name__ == "__main__":
     fl.server.start_server(
         server_address="localhost:8080",
         strategy=strategy,
-        config=fl.server.ServerConfig(num_rounds=10),
+        config=fl.server.ServerConfig(num_rounds=100),
     )

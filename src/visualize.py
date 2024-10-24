@@ -60,7 +60,8 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
 
     # 2. History of average loss among clients over rounds
     plt.figure(figsize=(10, 6))
-    plt.plot(rounds[:len(avg_losses)], avg_losses, marker='o')
+    plt.plot(rounds[:len(avg_losses)], avg_losses)
+    # plt.plot(rounds[:len(avg_losses)], avg_losses, marker='o')
     plt.title("Average Loss Among Clients Over Rounds" + (" (With Attack)" if attack else " (Without Attack)"))
     plt.xlabel("Round")
     plt.ylabel("Average Loss")
@@ -82,7 +83,8 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
 
     # 4. History of average evaluation accuracy among clients over rounds
     plt.figure(figsize=(10, 6))
-    plt.plot(rounds[:len(avg_accuracies)], avg_accuracies, marker='o')
+    plt.plot(rounds[:len(avg_accuracies)], avg_accuracies)
+    # plt.plot(rounds[:len(avg_accuracies)], avg_accuracies, marker='o')
     plt.title("Average Accuracy Among Clients Over Rounds" + (" (With Attack)" if attack else " (Without Attack)"))
     plt.xlabel("Round")
     plt.ylabel("Average Accuracy")
@@ -91,7 +93,7 @@ def plot_metrics(num_rounds, client_losses, client_accuracies, avg_losses, avg_a
     plt.show()
 
 if __name__ == "__main__":
-    num_rounds = 10
+    num_rounds = 100
     # Visualize without attack
     attack=False
     client_losses, client_accuracies, avg_losses, avg_accuracies = load_metrics(num_rounds, attack)
