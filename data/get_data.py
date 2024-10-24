@@ -125,7 +125,7 @@ class DataLoaders:
             transforms.Normalize(mean=[.5], std=[.5])
         ])
 
-    def get_test_loader(self, testing_subset_size=100, batch_size=10):
+    def get_test_loader(self, testing_subset_size=1000, batch_size=10):
         test_dataset = self.DataClass(split='test', transform=self.transform, download=True)
         test_dataset = clean_data(test_dataset)
 
@@ -156,7 +156,7 @@ class DataLoaders:
 
         return labels
 
-    def get_train_loader(self, training_subset_size=100, batch_size=10, poisoned=False, flip_ratio=0.75):
+    def get_train_loader(self, training_subset_size=50000, batch_size=10, poisoned=False, flip_ratio=0.75):
         training_dataset = self.DataClass(split='train', transform=self.transform, download=True)
         training_dataset = clean_data(training_dataset)
 
