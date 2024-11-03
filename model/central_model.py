@@ -4,12 +4,12 @@ import torch.nn as nn
 
 # Define the Neural Network Class
 class CentralCNN(nn.Module):
-    def __init__(self, n_classes=14):
+    def __init__(self, in_channels=3, n_classes=14):
         super(CentralCNN, self).__init__()
 
         # Layers in order as that used in network
         # Input Layer
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=16, kernel_size=3, stride=1, padding=0)
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=16, kernel_size=3, stride=1, padding=0)
         self.bn1 = nn.BatchNorm2d(num_features=16)
 
         self.conv2 = nn.Conv2d(in_channels=16, out_channels=16, kernel_size=3, stride=1, padding=0)
